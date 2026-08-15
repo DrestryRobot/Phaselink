@@ -1,0 +1,58 @@
+﻿/**** QWidget Style ****/
+QWidget{
+        background-color: #7d7d7d;
+}
+
+QWidget#widget,#Selectwidget,#OK_NOwidget{
+        /*am*/background-color: #FFFFFF;
+        /*pm*/background-color: rgb(0, 0, 0);
+}
+
+QWidget#title_widget{
+        background-color: #0358A4;
+}
+
+QWidget :focus{
+        outline:none;
+ }
+
+/**** QLabel Style ****/
+QLabel{
+        font: 21px "Microsoft YaHei";
+        /*pm*/color: #FFFFFF;
+        /*am*/color: #333333;
+        background-color: transparent;
+}
+
+QLabel#title_label{
+        color:#FFFFFF;
+}
+
+QPushButton#Min_Btn,#Delete_Btn{
+        font: 30px "Microsoft YaHei";
+        color: rgba(255, 255, 255);
+        background: transparent;
+}
+
+QPushButton#Min_Btn:pressed,#Delete_Btn:pressed{
+        color: #D9D9D9;
+}
+
+QPushButton#canalBtn,#okBtn,#PA_Btn,#UT_Btn{
+        font:24px "Microsoft YaHei";
+        color: rgba(255, 255, 255);
+        /*pm*/color:#FFFFFF;
+        /*am*/color:#333333;
+        /*pm*/background: #000000;
+        /*am*/background: #FFFFFF;
+        border: 1.5px solid #D0D0D0;
+        border-radius: 6px;
+}
+
+
+QPushButton#canalBtn:pressed,#okBtn:pressed
+,#PA_Btn:pressed,#UT_Btn:pressed{
+        color: #FFFFFF;
+        background: #0358A4;
+}
+

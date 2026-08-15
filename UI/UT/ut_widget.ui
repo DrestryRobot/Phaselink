@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>UT_widget</class>
+ <widget class="QWidget" name="UT_widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>390</width>
+    <height>945</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true"/>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+     <widget class="EssentialWidget" name="essentialwidget">
+      <attribute name="title">
+       <string>Essential</string>
+      </attribute>
+     </widget>
+     <widget class="Phase_array" name="phasewidget">
+      <attribute name="title">
+       <string>Phase</string>
+      </attribute>
+     </widget>
+     <widget class="Gate_widget" name="gatewidget">
+      <attribute name="title">
+       <string>Gate</string>
+      </attribute>
+     </widget>
+     <widget class="ACG_TCG_widget" name="tcgwidget">
+      <attribute name="title">
+       <string notr="true">TCG</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>EssentialWidget</class>
+   <extends>QWidget</extends>
+   <header>UI\UT\essentialwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Phase_array</class>
+   <extends>QWidget</extends>
+   <header>UI\UT\phase_array.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Gate_widget</class>
+   <extends>QWidget</extends>
+   <header>UI\UT\gate_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ACG_TCG_widget</class>
+   <extends>QWidget</extends>
+   <header>UI\UT\acg_tcg_widget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

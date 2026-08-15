@@ -1,0 +1,38 @@
+<RCC>
+    <qresource prefix="/">
+        <file>UI/Qss/Sensitivity_Measure.css</file>
+        <file>UI/Qss/Velocity_Measure.css</file>
+        <file>UI/Qss/AddGroup_select.css</file>
+        <file>UI/Qss/View_select.css</file>
+        <file>phaselink_CN.qm</file>
+        <file>phaselink_EN.qm</file>
+        <file>PAL/Eintik_11levels.pal</file>
+        <file>PAL/Eintik_11tonesofgrey.pal</file>
+        <file>PAL/Eintik_Alarm.pal</file>
+        <file>PAL/Eintik_Amplitude.pal</file>
+        <file>PAL/Eintik_AmplitudeCut.pal</file>
+        <file>PAL/Eintik_AmplitudeCutDark.pal</file>
+        <file>PAL/Eintik_AmplitudeDark.pal</file>
+        <file>PAL/Eintik_Aqua.pal</file>
+        <file>PAL/Eintik_Corrosion.pal</file>
+        <file>PAL/Eintik_Corrosion4Level.pal</file>
+        <file>PAL/Eintik_Corrosion_2.pal</file>
+        <file>PAL/Eintik_Corrosion_3.pal</file>
+        <file>PAL/Eintik_CouplingCheck.pal</file>
+        <file>PAL/Eintik_Detection.pal</file>
+        <file>PAL/Eintik_Indication.pal</file>
+        <file>PAL/Eintik_ONDT.pal</file>
+        <file>PAL/Eintik_PC_TFM.pal</file>
+        <file>PAL/Eintik_PC_TFM_BOOST.pal</file>
+        <file>PAL/Eintik_RFrectified.pal</file>
+        <file>PAL/Eintik_RFTOFD.pal</file>
+        <file>PAL/Eintik_Sizing.pal</file>
+        <file>PAL/Eintik_TFM(coupure).pal</file>
+        <file>PAL/Eintik_TFM_Amplitude.pal</file>
+        <file>PAL/Eintik_TFM_Aqua.pal</file>
+        <file>PAL/Eintik_TFM_Contrast.pal</file>
+        <file>PAL/Eintik_TFM_Dark.pal</file>
+        <file>PAL/Eintik_TFM_Dark_Contrast.pal</file>
+        <file>PAL/Eintik_Threshold.pal</file>
+    </qresource>
+</RCC>
