@@ -16,7 +16,6 @@
 
 enum class ConState { Unknown, Connected, Unconnected, Failed };
 
-// 设备唯一标识：IP + 设备ID
 struct DeviceKey
 {
     QString ip;
@@ -37,11 +36,9 @@ struct DeviceKey
     QString toString() const { return QString("%1:%2").arg(ip).arg(deviceId); }
 };
 
-QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
 }
-QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
@@ -69,7 +66,7 @@ private slots:
 
     void on_comboBox_currentIndexChanged(int index);
     void on_comboBox_ip_currentIndexChanged(int index);
-    void on_comboBox_id_currentIndexChanged(int index); // 新增：设备ID下拉框变化
+    void on_comboBox_id_currentIndexChanged(int index);
     void on_viewComboBox_currentIndexChanged(int index);
     void on_lineEdit_editingFinished();
 
@@ -87,11 +84,10 @@ private:
     virtual void changeEvent(QEvent *event) Q_DECL_OVERRIDE;
     virtual void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
 
-    // 新增辅助方法
-    void refreshDeviceComboBox();                      // 刷新设备下拉列表
-    void sendPlaybackFrame(int idx);                   // 回放时发送指定帧到各视图
-    DeviceKey getCurrentDeviceKey();                   // 获取当前选中的设备
-    void updateDeviceComboBoxForIp(const QString &ip); // 根据IP更新设备ID下拉框
+    void refreshDeviceComboBox();
+    void sendPlaybackFrame(int idx);
+    DeviceKey getCurrentDeviceKey();
+    void updateDeviceComboBoxForIp(const QString &ip);
 
 private:
     Ui::MainWindow *ui;
@@ -101,25 +97,22 @@ private:
     QVector<int> AmpData;
     std::string ipAddress;
     QByteArray curDatapacket;
-    int32_t m_recFirstEncoderA = 0;
-    int32_t m_recFirstEncoderB = 0;
-    bool m_recFirstFrame = true;
     QMap<quint32, QByteArray> m_playbackFrames;
     QList<quint32> m_playbackKeys;
     PacketDataSaver *m_dataSaver = nullptr;
+    int m_playbackBeamCount = 0;
     DataProcessor *m_dataProcessor = nullptr;
     QThread *m_processorThread = nullptr;
     QTimer *m_playbackTimer = nullptr;
     int m_currentPlaybackIdx = 0;
+    int findClosestKey(quint32 key) const;
+    bool m_cScanViewInitialized = false;
+    bool m_isASC = false;
 
-    // 修改：使用 DeviceKey 作为 key
-    QMap<DeviceKey, ConState> m_deviceStates; // 设备 -> 连接状态
-    DeviceKey m_currentSelectedDevice;        // 当前选中的设备
-    bool m_savingEnabled = false;
-
+    QMap<DeviceKey, ConState> m_deviceStates;
+    DeviceKey m_currentSelectedDevice;
 };
 
-// 需要为 QMap 提供 qHash 函数（如果使用 QHash）
 inline uint qHash(const DeviceKey &key, uint seed)
 {
     return qHash(key.ip, seed) ^ (key.deviceId + seed);

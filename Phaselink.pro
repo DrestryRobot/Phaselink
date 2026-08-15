@@ -26,6 +26,7 @@ SOURCES += \
     UI/UT/ut_widget.cpp \
     UI/scanning.cpp \
     app.cpp \
+    datadispatch.cpp \
     dialog/addsud_group.cpp \
     dialog/amplitudpalette.cpp \
     dialog/axis_utils.cpp \
@@ -51,6 +52,7 @@ HEADERS += \
     UI/UT/ut_widget.h \
     UI/scanning.h \
     app.h \
+    datadispatch.h \
     dialog/adddeviceDialog.h \
     dialog/addsud_group.h \
     dialog/amplitudpalette.h \
