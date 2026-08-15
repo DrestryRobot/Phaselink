@@ -48,6 +48,13 @@ void DataProcessor::enqueueData(const QByteArray &data, int device_id)
     }
 
     if (m_config.getCurrentServerId() != device_id) {
+        static qint64 lastDropLog = 0;
+        qint64 now = QDateTime::currentMSecsSinceEpoch();
+        if (now - lastDropLog > 3000) {
+            lastDropLog = now;
+            qDebug() << "[DataProcessor] 丢弃超声帧: device_id=" << device_id
+                     << " currentServerId=" << m_config.getCurrentServerId();
+        }
         return;
     }
 

@@ -484,6 +484,24 @@ void ViewWidget::slot_Recive_date(int beam, const QByteArray &datapacket, bool R
         return;
     }
 
+    // 调试：A 扫视图每秒统计收到的帧数
+    if (View == A_Scan) {
+        static int aFrames = 0;
+        static QElapsedTimer aTimer;
+        if (!aTimer.isValid())
+            aTimer.start();
+        aFrames++;
+        if (aTimer.elapsed() >= 1000) {
+            qDebug() << "[AScan] View_1 收到帧:" << aFrames
+                     << " id_beam:" << id_beam
+                     << " pointQuantity:" << pointQuantity
+                     << " maxAmp:" << maxAmp
+                     << " 包大小:" << datapacket.size();
+            aFrames = 0;
+            aTimer.restart();
+        }
+    }
+
     const int minSize = static_cast<int>(sizeof(datapacketTail));
     if (datapacket.size() < minSize) {
         qWarning() << "ViewWidget: datapacket too small, size=" << datapacket.size();
@@ -699,6 +717,23 @@ void ViewWidget::onAScanReady(QList<QPointF> points)
 {
     if (View != A_Scan)
         return;
+
+    // 调试：A 扫每秒统计渲染帧数和幅值
+    static int rFrames = 0;
+    static QElapsedTimer rTimer;
+    if (!rTimer.isValid())
+        rTimer.start();
+    rFrames++;
+    if (rTimer.elapsed() >= 1000) {
+        double first = points.isEmpty() ? -999.0 : points.first().y();
+        double last = points.isEmpty() ? -999.0 : points.last().y();
+        qDebug() << "[AScan] 渲染:" << rFrames
+                 << " 点数:" << points.size()
+                 << " 首点%:" << first << " 末点%:" << last;
+        rFrames = 0;
+        rTimer.restart();
+    }
+
     m_series->clear();
     m_series->replace(points);
     if (m_chartView->scene())
