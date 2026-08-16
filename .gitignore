@@ -37,7 +37,12 @@ Thumbs.db
 .qtcreator/
 
 # local build & runtime artifacts
-build/
+build/*
+!build/release/
+build/release/*
+!build/release/release/
+build/release/release/*
+!build/release/release/default_config.json
 global/
 logs/
 

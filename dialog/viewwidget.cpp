@@ -200,6 +200,11 @@ void ViewWidget::initChart(QWidget *parent)
 
     m_chartView->setRenderHint(QPainter::Antialiasing);
     m_chartView->setRubberBand(QChartView::NoRubberBand);
+    // 波形大幅跳变（如探头进出板子）时，Qt Charts 增量重绘可能残留旧轨迹，
+    // 强制全量重绘并给绘图区不透明背景，确保每帧都把旧波形彻底擦掉。
+    m_chartView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    m_chart->setPlotAreaBackgroundVisible(true);
+    m_chart->setPlotAreaBackgroundBrush(QBrush(Qt::black));
 
     auto beamPoints = pointQuantity;
     auto xtick_count = 5;
@@ -480,6 +485,23 @@ void ViewWidget::resizeEvent(QResizeEvent *e)
 
 void ViewWidget::slot_Recive_date(int beam, const QByteArray &datapacket, bool Replay, int No)
 {
+    // 探针：测量 UI 线程上每帧收包处理耗时（RAII，覆盖提前返回路径）
+    struct RecvProbe {
+        QElapsedTimer t;
+        RecvProbe() { t.start(); }
+        ~RecvProbe() {
+            static qint64 ms = 0;
+            static int n = 0;
+            ms += t.nsecsElapsed() / 1000;
+            n++;
+            if (ms >= 500000) {
+                qDebug() << "[RecvTiming] slot_Recive_date平均" << (ms / (double)n)
+                         << "µs, n=" << n;
+                ms = 0; n = 0;
+            }
+        }
+    } recvProbe;
+
     if (!m_isActive || datapacket.isEmpty()) {
         return;
     }
@@ -680,15 +702,20 @@ void ViewWidget::slot_Recive_date(int beam, const QByteArray &datapacket, bool R
             m_renderQueue.enqueue(renderData);
         }
 
-        QMetaObject::invokeMethod(this, [this]() {
-            if (!m_renderTimerControl.isActive()) {
-                if (m_updateInterval > 0) {
-                    m_renderTimerControl.start(m_updateInterval);
-                } else {
-                    renderNextFrame();
+        // 只在没有在途通知时投递一次 GUI 事件；定时器运行期间不再重复投递，
+        // 由 renderNextFrame 在停表时复位标志。
+        if (!m_notifyQueued.exchange(true)) {
+            QMetaObject::invokeMethod(this, [this]() {
+                if (!m_renderTimerControl.isActive()) {
+                    m_notifyQueued = false;
+                    if (m_updateInterval > 0) {
+                        m_renderTimerControl.start(m_updateInterval);
+                    } else {
+                        renderNextFrame();
+                    }
                 }
-            }
-        }, Qt::QueuedConnection);
+            }, Qt::QueuedConnection);
+        }
     }
 }
 
@@ -715,6 +742,23 @@ void ViewWidget::processFrameData(App::Cscan_Data C_SCAN, int beam, const QByteA
 
 void ViewWidget::onAScanReady(QList<QPointF> points)
 {
+    // 探针：测量 AScan 每次渲染（QtCharts 清空/重建/重绘）耗时
+    struct RenderProbe {
+        QElapsedTimer t;
+        RenderProbe() { t.start(); }
+        ~RenderProbe() {
+            static qint64 ms = 0;
+            static int n = 0;
+            ms += t.nsecsElapsed() / 1000;
+            n++;
+            if (ms >= 500000) {
+                qDebug() << "[AScanRenderTiming] onAScanReady平均" << (ms / (double)n)
+                         << "µs, n=" << n;
+                ms = 0; n = 0;
+            }
+        }
+    } renderProbe;
+
     if (View != A_Scan)
         return;
 
@@ -840,6 +884,7 @@ void ViewWidget::renderNextFrame()
         if (m_renderTimerControl.isActive()) {
             m_renderTimerControl.stop();
         }
+        m_notifyQueued = false;
         return;
     }
 
@@ -877,6 +922,7 @@ void ViewWidget::renderNextFrame()
             QMetaObject::invokeMethod(this, &ViewWidget::renderNextFrame, Qt::QueuedConnection);
         } else {
             m_renderTimerControl.stop();
+            m_notifyQueued = false;
         }
     }
 }
@@ -1392,6 +1438,7 @@ void ViewWidget::setActive(bool active)
         QMutexLocker locker(&m_queueMutex);
         m_renderQueue.clear();
         m_renderTimerControl.stop();
+        m_notifyQueued = false;
     }
 }
 
@@ -1467,6 +1514,8 @@ void ViewWidget::setChartColors(const QColor &bgColor, const QColor &lineColor)
 {
     if (m_chart) {
         m_chart->setBackgroundBrush(QBrush(bgColor));
+        m_chart->setPlotAreaBackgroundVisible(true);
+        m_chart->setPlotAreaBackgroundBrush(QBrush(bgColor));
     }
     if (m_series) {
         QPen pen(lineColor);

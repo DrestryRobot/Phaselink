@@ -323,6 +323,9 @@ public:
     // 统计信息
     std::atomic<int> m_totalFramesReceived { 0 };
     std::atomic<int> m_totalFramesProcessed { 0 };
+    // 合并数据到达通知：同一时刻只允许一个“有待渲染数据”的 GUI 事件在途，
+    // 避免 300fps 数据每包都向 UI 线程投递一次事件（多个视图合计上千次/秒）。
+    std::atomic<bool> m_notifyQueued { false };
 
     // 新增：帧到位图位置的映射缓存
     QHash<int, int> m_frameToXPosCache;
