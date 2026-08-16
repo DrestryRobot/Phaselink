@@ -31,8 +31,6 @@ qrc_*.cpp
 Thumbs.db
 *.res
 *.rc
-/.qmake.cache
-/.qmake.stash
 
 # qtcreator generated files
 *.pro.user*
@@ -40,8 +38,6 @@ Thumbs.db
 
 # local build & runtime artifacts
 build/
-build-debug/
-build-release/
 global/
 logs/
 
@@ -787,3 +783,4 @@ release/configs/device_0/prefs.json
 release/global/global_config.json
 release/logs/log_20260119_151121.txt
 release/logs/log_20260119_151256.txt
+.gitignore
