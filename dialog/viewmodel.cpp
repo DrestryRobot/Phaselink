@@ -97,6 +97,7 @@ void ViewModel::extractAndPushDefectCloudData(int beam_0, const QByteArray &data
     //   - 无效的边缘波束（0/末）：也写原始值；
     //   - 无效的非边缘波束：不覆盖，保持上一次的值（补齐，内部不留空缺）。
     // ============================================================
+    QMutexLocker locker(&g_scanDataMutex);
     for (int i = 0; i < beam_0; i++) {
         bool isEdge = (i == 0 || i == beam_0 - 1);
         if (valid[i]) {
