@@ -92,15 +92,26 @@ void ViewModel::extractAndPushDefectCloudData(int beam_0, const QByteArray &data
     }
 
     // ============================================================
-    // 3DScan 统一数据处理：本模块只负责原始超声数据接收与测量值提取；
-    // 板子判断/有效性滤波/板内补帧统一由 Scan 处理（回放与实时一致）。
+    // 点都补齐（不做板内板外判断，与最早版一致）：
+    //   - I 门有效：写原始值；
+    //   - 无效的边缘波束（0/末）：也写原始值；
+    //   - 无效的非边缘波束：不覆盖，保持上一次的值（补齐，内部不留空缺）。
     // ============================================================
     for (int i = 0; i < beam_0; i++) {
-        amp[i] = curAmp[i];
-        tof[i] = curTof[i];
-        beamValid[i] = valid[i];          // 原始 I 门有效性
-        if (i == (beam_0 - 1) / 2)
-            si = curSi[i];
+        bool isEdge = (i == 0 || i == beam_0 - 1);
+        if (valid[i]) {
+            amp[i] = curAmp[i];
+            tof[i] = curTof[i];
+            if (i == (beam_0 - 1) / 2) si = curSi[i];
+            beamValid[i] = true;
+        } else if (isEdge) {
+            amp[i] = curAmp[i];
+            tof[i] = curTof[i];
+            beamValid[i] = true;
+        } else {
+            // 非边缘无效：保持上一次的 amp/tof（不覆盖即保留），点都补齐
+            beamValid[i] = true;
+        }
     }
     beam = beam_0;
 }
