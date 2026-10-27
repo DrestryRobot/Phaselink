@@ -82,6 +82,11 @@ void ViewModel::extractAndPushDefectCloudData(int beam_0, const QByteArray &data
                         ? (sa - siPos) / Thick
                         : (sb - siPos) / Thick;
 
+        // 缺陷位置AMP置为1
+        if (gateAmp > a_threshold && gateBAmp < b_threshold) {
+            gateAmp = 1.0;
+        }
+
         // 有效性：I 门幅值代表是否在板子上（原始判定，不随时间滞回；
         // 抗抖动交给下方居中窗口的中值边界处理）
         valid[i] = (gateIAmp > i_threshold);
