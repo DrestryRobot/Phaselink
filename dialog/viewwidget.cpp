@@ -485,43 +485,8 @@ void ViewWidget::resizeEvent(QResizeEvent *e)
 
 void ViewWidget::slot_Recive_date(int beam, const QByteArray &datapacket, bool Replay, int No)
 {
-    // 探针：测量 UI 线程上每帧收包处理耗时（RAII，覆盖提前返回路径）
-    struct RecvProbe {
-        QElapsedTimer t;
-        RecvProbe() { t.start(); }
-        ~RecvProbe() {
-            static qint64 ms = 0;
-            static int n = 0;
-            ms += t.nsecsElapsed() / 1000;
-            n++;
-            if (ms >= 500000) {
-                qDebug() << "[RecvTiming] slot_Recive_date平均" << (ms / (double)n)
-                         << "µs, n=" << n;
-                ms = 0; n = 0;
-            }
-        }
-    } recvProbe;
-
     if (!m_isActive || datapacket.isEmpty()) {
         return;
-    }
-
-    // 调试：A 扫视图每秒统计收到的帧数
-    if (View == A_Scan) {
-        static int aFrames = 0;
-        static QElapsedTimer aTimer;
-        if (!aTimer.isValid())
-            aTimer.start();
-        aFrames++;
-        if (aTimer.elapsed() >= 1000) {
-            qDebug() << "[AScan] View_1 收到帧:" << aFrames
-                     << " id_beam:" << id_beam
-                     << " pointQuantity:" << pointQuantity
-                     << " maxAmp:" << maxAmp
-                     << " 包大小:" << datapacket.size();
-            aFrames = 0;
-            aTimer.restart();
-        }
     }
 
     const int minSize = static_cast<int>(sizeof(datapacketTail));
@@ -742,41 +707,8 @@ void ViewWidget::processFrameData(App::Cscan_Data C_SCAN, int beam, const QByteA
 
 void ViewWidget::onAScanReady(QList<QPointF> points)
 {
-    // 探针：测量 AScan 每次渲染（QtCharts 清空/重建/重绘）耗时
-    struct RenderProbe {
-        QElapsedTimer t;
-        RenderProbe() { t.start(); }
-        ~RenderProbe() {
-            static qint64 ms = 0;
-            static int n = 0;
-            ms += t.nsecsElapsed() / 1000;
-            n++;
-            if (ms >= 500000) {
-                qDebug() << "[AScanRenderTiming] onAScanReady平均" << (ms / (double)n)
-                         << "µs, n=" << n;
-                ms = 0; n = 0;
-            }
-        }
-    } renderProbe;
-
     if (View != A_Scan)
         return;
-
-    // 调试：A 扫每秒统计渲染帧数和幅值
-    static int rFrames = 0;
-    static QElapsedTimer rTimer;
-    if (!rTimer.isValid())
-        rTimer.start();
-    rFrames++;
-    if (rTimer.elapsed() >= 1000) {
-        double first = points.isEmpty() ? -999.0 : points.first().y();
-        double last = points.isEmpty() ? -999.0 : points.last().y();
-        qDebug() << "[AScan] 渲染:" << rFrames
-                 << " 点数:" << points.size()
-                 << " 首点%:" << first << " 末点%:" << last;
-        rFrames = 0;
-        rTimer.restart();
-    }
 
     m_series->clear();
     m_series->replace(points);
